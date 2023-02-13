@@ -242,6 +242,7 @@ namespace BankForm
                     }
                 }while(1);
             }
+            Console.WriteLine("\nAccount Created Successfully...");
         }
         void ShowAccountDetails()
         {
@@ -336,6 +337,8 @@ namespace BankForm
                 Console.WriteLine($"\t* Card Type: {creditCardType}");
                 Console.WriteLine($"\t* Card Limit: {cardLimit}");
             }
+            else
+                console.WriteLine("\nYou are not eligible to apply credit card.");
         }
         
     }
@@ -344,39 +347,47 @@ namespace BankForm
     {
         public static void Main(string[] args)
         {
-            public string createAnotherAccount;
-            public bool createAccount = false;
+            public int choice;
+            public string exit;
 
-            do 
+            do
             {
-                BankCustomer customer = new BankCustomer();
-                Console.WriteLine("\n-----------Net Banking-----------");
-
-                customer.GetDetails();
-
-                BankAccount account = new BankAccount();
-                account.CreateAccount();
-
-                CreditCard cc = new CreditCard();
-                cc.RequestCreditCard();
-                
-                Console.WriteLine("\n\n--------------------------------------------");
-                Console.WriteLine("                 Bank Details               ");
+                Console.WriteLine("\n                Net Banking                ");
                 Console.WriteLine("--------------------------------------------");
-
-                customer.ShowPersonalDetails();
-                account.ShowAccountDetails();
-                cc.ShowCreditCardDetails();
+                Console.WriteLine("\n1. Create Account");
+                Console.WriteLine("\n2. Show Account Details");
                 Console.WriteLine("--------------------------------------------");
+                choice = Console.ReadLine();
 
-                Console.WriteLine("\nCreate Another Account? ");
-                createAnotherAccount = Console.ReadLine();
-                if((createAnotherAccount.ToUpper() == "YES") || (createAnotherAccount.ToUpper() == "Y"))
-                    createAccount = true;
-                else
-                    createAccount = false;
+                switch(choice)
+                {
+                    case "1": BankCustomer customer = new BankCustomer();
+                            customer.GetDetails();
 
-            } while (createAccount == true);
+                            BankAccount account = new BankAccount();
+                            account.CreateAccount();
+
+                            CreditCard cc = new CreditCard();
+                            cc.RequestCreditCard();
+                    break;
+
+                    case "2":Console.WriteLine("\n\n--------------------------------------------");
+                            Console.WriteLine("                 Bank Details               ");
+                            Console.WriteLine("--------------------------------------------");
+
+                            customer.ShowPersonalDetails();
+                            account.ShowAccountDetails();
+                            cc.ShowCreditCardDetails();
+                            Console.WriteLine("--------------------------------------------");
+                    break;
+
+                    default:    Console.WriteLine("\nEnter Correct Option\tor");
+                                Console.WriteLine("\nEnter exit to stop..");
+                    break;
+                }
+                Console.WriteLine("Enter \"exit\" to stop");
+                exit = Console.ReadLine();
+            } while(exit.ToLower() != "exit");
         }
     }
 }
