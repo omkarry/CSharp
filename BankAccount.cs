@@ -88,7 +88,7 @@ namespace BankSystem
             Console.WriteLine($"Balance of Omkar: {omkarAccount.Balance}");
             
             BankAccount account = bank.GetBankAccount("10002938");
-            if (account is null)
+            if (account == null)
             {
                 Console.WriteLine("\nNo account Found..")
             }
