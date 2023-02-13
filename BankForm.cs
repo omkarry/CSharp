@@ -160,7 +160,7 @@ namespace BankForm
 
     internal class BankAccount
     {
-        private string  panNumber, accountNumber, bankAccountNumber;
+        private string  panNumber, bankAccountNumber;
         public string addNominee, nomineeName, nomineeRelation, isAddressSame, permanentAddress, correspondenceAddress,;
         public int nomineeAge;
 
@@ -170,7 +170,7 @@ namespace BankForm
         public void CreateAccount()
         {
             bankAccountNumber = rd.Next(1000000,9999999);
-            accountNumber = "00000" + bankAccountNumber.ToString();
+            bankAccountNumber = "00000" + bankAccountNumber.ToString();
 
             do
             {
@@ -270,7 +270,7 @@ namespace BankForm
         public int cardLimit;
         public decimal salary;
         public string creditCardType, requestCreditCard;
-        bool cardRequestAccepted = false;
+        public bool cardRequestAccepted = false;
 
         public void RequestCreditCard()
         {
