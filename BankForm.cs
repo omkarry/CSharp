@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace BankForm
 {
-    class BankCustomer
+    public class BankCustomer
     {
         public string FirstName{get; set;}
         public string LastName{get; set;}
@@ -16,11 +16,8 @@ namespace BankForm
 
         public string haveChildren;
 
-        bool isMarried = false;
-        string[] childrenNames = new string[20];
-
-        public BankCustomer()
-        {}
+        public bool isMarried = false;
+        public string[] childrenNames = new string[20];
 
         public void GetDetails()
         {
@@ -63,7 +60,7 @@ namespace BankForm
             {
                 Console.WriteLine("\nEnter your Age: ");
                 Age = Convert.ToInt32(Console.ReadLine());
-                if(!(Regex.IsMatch(Age.ToString(),@"^1[8-9]|[2-7][0-9]|[80]$")))
+                if(Age<18 || Age>80)
                 {
                     Console.WriteLine("\nEnter Age Between 18-80 ");
                 }
@@ -161,11 +158,10 @@ namespace BankForm
         }
     }
 
-    class BankAccount
+    internal class BankAccount
     {
-        private string  panNumber, permanentAddress, correspondenceAddress, accountNumber,
-        bankAccountNumber;
-        public string addNominee, nomineeName, nomineeRelation, isAddressSame;
+        private string  panNumber, accountNumber, bankAccountNumber;
+        public string addNominee, nomineeName, nomineeRelation, isAddressSame, permanentAddress, correspondenceAddress,;
         public int nomineeAge;
 
         public BankAccount()
@@ -224,7 +220,7 @@ namespace BankForm
                 {
                         Console.WriteLine("\nNominee Age: ");
                     nomineeAge = int.Parse(Console.ReadLine());
-                    if(!(Regex.IsMatch(nomineeAge.ToString(),@"^1[8-9]|[2-7][0-9]|[80]$")))
+                    if(nomineeAge<18 || nomineeAge>80)
                     {
                         Console.WriteLine("Enter nominee Age between 18-80 ");
                     }
@@ -275,9 +271,6 @@ namespace BankForm
         public decimal salary;
         public string creditCardType, requestCreditCard;
         bool cardRequestAccepted = false;
-
-        public CreditCard()
-        {}
 
         public void RequestCreditCard()
         {

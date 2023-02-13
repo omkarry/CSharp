@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BankSystem
 {
-    class BankAccount
+    internal class BankAccount
     {
         public string AccountNumber{get; private set;}
         public decimal Balance{get; private set;}
@@ -28,14 +28,9 @@ namespace BankSystem
             else
                 Balance -= amount;
         }
-
-        private void UpdateAccountNumber(string newAccountNumber)
-        {
-            AccountNumber = newAccountNumber;
-        }
     }
 
-    class BankCustomer
+    public class BankCustomer
     {
         public string Name{get; set;}
         public List<BankAccount> Accounts{get; set;}
@@ -52,7 +47,7 @@ namespace BankSystem
         }
     }
 
-    class Bank
+    internal class Bank
     {
         private List<BankCustomer> customers = new  List<BankCustomer>();
         
@@ -77,7 +72,7 @@ namespace BankSystem
         }
     }
 
-    class BankSystem
+    public class BankSystem
     {
         public static void Main(string[] args)
         {
@@ -93,10 +88,16 @@ namespace BankSystem
             Console.WriteLine($"Balance of Omkar: {omkarAccount.Balance}");
             
             BankAccount account = bank.GetBankAccount("10002938");
-
-             Console.WriteLine("Withdrawl of 2000...");
-            account.Withdraw(2000);
-            Console.WriteLine($"Now balance is {omkarAccount.Balance}");
+            if (account is null)
+            {
+                Console.WriteLine("\nNo account Found..")
+            }
+            else
+            {
+                Console.WriteLine("Withdrawl of 2000...");
+                account.Withdraw(2000);
+                Console.WriteLine($"Now balance is {omkarAccount.Balance}");
+            }
         }
     }
 }
