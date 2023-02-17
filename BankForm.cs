@@ -30,7 +30,7 @@ namespace BankForm
                 }
                 else
                     break;
-            }while(1);
+            }while(true);
             
             do
             {
@@ -42,7 +42,7 @@ namespace BankForm
                 }
                 else
                     break;
-            }while(1);
+            }while(true);
 
             do
             {
@@ -54,7 +54,7 @@ namespace BankForm
                 }
                 else
                     break;
-            }while(1);
+            }while(true);
 
             do
             {
@@ -66,17 +66,17 @@ namespace BankForm
                 }
                 else
                     break;
-            }while(1);
+            }while(true);
             
             do
             {
                 Console.WriteLine("Enter your Email Id: ");
-                email = Console.ReadLine();
-                if(!(Regex.IsMatch(email,@"^[a-zA-Z0-9+_.-]+@(.+)+.com$")))
+                MailId = Console.ReadLine();
+                if(!(Regex.IsMatch(MailId,@"^[a-zA-Z0-9+_.-]+@(.+)+.com$")))
                 {
                     Console.WriteLine("Enter a valid email");
                 }
-            }while(1);
+            }while(true);
 
             do
             {
@@ -88,7 +88,7 @@ namespace BankForm
                 }
                 else
                     break;
-            }while(1);
+            }while(true);
             
             do
             {
@@ -116,7 +116,7 @@ namespace BankForm
                                 }
                                 else
                                     break;
-                            }while(1);
+                            }while(true);
                         }
                     }
                 }
@@ -129,7 +129,7 @@ namespace BankForm
                     else
                         break;
                 }
-            }while(1);
+            }while(true);
         }
 
         public void ShowPersonalDetails()
@@ -137,7 +137,7 @@ namespace BankForm
             Console.WriteLine("\n--* Presonal Details *--");
             Console.WriteLine($"\t* Account Holder Name: {FirstName} {LastName}");
             Console.WriteLine($"\t* Gender: {Gender}");
-            Console.WriteLine($"\t* Email Id: {email}");
+            Console.WriteLine($"\t* Email Id: {MailId}");
             Console.WriteLine($"\t* Phone Number: {PhoneNumber}");
             if (isMarried==true)
             {
@@ -161,29 +161,29 @@ namespace BankForm
     internal class BankAccount
     {
         private string  panNumber, bankAccountNumber;
-        public string addNominee, nomineeName, nomineeRelation, isAddressSame, permanentAddress, correspondenceAddress,;
+        public string addNominee, nomineeName, nomineeRelation, isAddressSame, 
+        permanentAddress, correspondenceAddress;
         public int nomineeAge;
 
-        public BankAccount()
-        {}
+        Random rd =new Random();
 
         public void CreateAccount()
         {
-            bankAccountNumber = rd.Next(1000000,9999999);
-            bankAccountNumber = "00000" + bankAccountNumber.ToString();
+            bankAccountNumber = (rd.Next(1000000,9999999)).ToString();
+            bankAccountNumber = "00000" + bankAccountNumber;
 
             do
             {
                 Console.WriteLine("\nEnter your Pan number:");
                 panNumber = Console.ReadLine();
 
-                if(!(Regex.IsMatch(panNumber.ToString(),@"^[A-Z]{5}[0-9]{4}[A-Z]{1}$")))
+                if(!(Regex.IsMatch(panNumber,@"^[A-Z]{5}[0-9]{4}[A-Z]{1}$")))
                 {
                     Console.WriteLine("\nEnter Pan number Correctly");
                 }
                 else
                     break;
-            }while(1);
+            }while(true);
             
             Console.WriteLine("\nAre your permanent and correspondence address same?(Yes/No) ");
             isAddressSame = Console.ReadLine();
@@ -214,7 +214,7 @@ namespace BankForm
                     }
                     else
                         break;
-                }while(1);
+                }while(true);
 
                 do
                 {
@@ -226,7 +226,7 @@ namespace BankForm
                     }
                     else
                         break;
-                }while(1);
+                }while(true);
 
                 do
                 {
@@ -236,14 +236,14 @@ namespace BankForm
                     {
                         Console.WriteLine("\nEnter relation with nominee correctly ");
                     }
-                }while(1);
+                }while(true);
             }
             Console.WriteLine("\nAccount Created Successfully...");
         }
-        void ShowAccountDetails()
+        public void ShowAccountDetails()
         {
             Console.WriteLine("\n\n--* Bank Account Details *--");
-            Console.WriteLine($"\t* Bank Account Number: {accountNumber}");
+            Console.WriteLine($"\t* Bank Account Number: {bankAccountNumber}");
             Console.WriteLine($"\t* Pan Number: {panNumber}");
             if (addNominee.ToUpper() == "YES" || addNominee.ToUpper() == "Y")
             {
@@ -251,7 +251,7 @@ namespace BankForm
                 Console.WriteLine($"\t* Nominee Age: {nomineeAge}");
                 Console.WriteLine($"\t* Relation with nominee: {nomineeRelation}");                    
             }
-            if(sameAddress.ToUpper() == "YES" || sameAddress.ToUpper() == "Y")
+            if(isAddressSame.ToUpper() == "YES" || isAddressSame.ToUpper() == "Y")
             {
                 Console.WriteLine($"\t* Permanent Address: {permanentAddress}");
 
@@ -271,6 +271,8 @@ namespace BankForm
         public decimal salary;
         public string creditCardType, requestCreditCard;
         public bool cardRequestAccepted = false;
+
+        Random rd = new Random();
 
         public void RequestCreditCard()
         {
@@ -318,10 +320,10 @@ namespace BankForm
                         cardRequestAccepted = true;
                         break;
                     }
-                }while(1);
+                }while(true);
             }
         }
-        void ShowCreditCardDetails()
+        public void ShowCreditCardDetails()
         {
             if(cardRequestAccepted == true)
             {
@@ -331,17 +333,22 @@ namespace BankForm
                 Console.WriteLine($"\t* Card Limit: {cardLimit}");
             }
             else
-                console.WriteLine("\nYou are not eligible to apply credit card.");
+                Console.WriteLine("\nYou are not eligible to apply credit card.");
         }
         
     }
 
     class BankSystem
     {
-        public static void Main(string[] args)
+        public string choice; 
+        public string exit="";
+        public bool hasCustomer = false;
+        public static void Main()
         {
-            public int choice;
-            public string exit;
+            BankSystem bankSystem = new BankSystem();
+            BankCustomer customer = new BankCustomer();
+            BankAccount account = new BankAccount();
+            CreditCard cc = new CreditCard();
 
             do
             {
@@ -350,21 +357,23 @@ namespace BankForm
                 Console.WriteLine("\n1. Create Account");
                 Console.WriteLine("\n2. Show Account Details");
                 Console.WriteLine("--------------------------------------------");
-                choice = Console.ReadLine();
+                Console.WriteLine("\nEnter exit to stop..");
+                bankSystem.choice = Console.ReadLine();
 
-                switch(choice)
+                switch(bankSystem.choice)
                 {
-                    case "1": BankCustomer customer = new BankCustomer();
-                            customer.GetDetails();
-
-                            BankAccount account = new BankAccount();
+                    case "1": customer.GetDetails();
                             account.CreateAccount();
-
-                            CreditCard cc = new CreditCard();
                             cc.RequestCreditCard();
+                            bankSystem.hasCustomer = true;
                     break;
 
-                    case "2":Console.WriteLine("\n\n--------------------------------------------");
+                    case "2":if(bankSystem.hasCustomer == false)
+                            {
+                                Console.WriteLine("\nCreate account first");
+                                break;
+                            }
+                            Console.WriteLine("\n\n--------------------------------------------");
                             Console.WriteLine("                 Bank Details               ");
                             Console.WriteLine("--------------------------------------------");
 
@@ -374,13 +383,13 @@ namespace BankForm
                             Console.WriteLine("--------------------------------------------");
                     break;
 
-                    default:    Console.WriteLine("\nEnter Correct Option\tor");
-                                Console.WriteLine("\nEnter exit to stop..");
+                    case "exit": bankSystem.exit = "exit";
+                    break;
+
+                    default:    Console.WriteLine("\nEnter Correct Option");
                     break;
                 }
-                Console.WriteLine("Enter \"exit\" to stop");
-                exit = Console.ReadLine();
-            } while(exit.ToLower() != "exit");
+            } while(bankSystem.exit.ToLower() != "exit");   
         }
     }
-}
+}    
