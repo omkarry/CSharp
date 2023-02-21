@@ -156,8 +156,6 @@ namespace ConsoleApp2.BankModels
             {
                 Console.WriteLine(DLEE.Message);
                 Console.WriteLine("\nRemaining limit to deposit amount: {0}", dailyDepositLimit);
-                if (dailyDepositLimit != 0)
-                    Deposit();
             }
             catch (Exception E)
             {
@@ -201,8 +199,6 @@ namespace ConsoleApp2.BankModels
             {
                 Console.WriteLine(DLEE.Message);
                 Console.WriteLine("\nRemaining limit to withdraw amount: {0}", dailyWithdrawLimit);
-                if (dailyWithdrawLimit != 0 && balance != 0)
-                    Withdraw();
             }
             catch (Exception E)
             {
