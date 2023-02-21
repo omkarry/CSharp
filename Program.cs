@@ -40,7 +40,7 @@ namespace BankForm
                         break;
 
                     case "2":
-                        if (bankSystem.hasCustomer == false)
+                        if (!bankSystem.hasCustomer)
                         {
                             Console.WriteLine("\nCreate account first");
                             break;
@@ -56,7 +56,7 @@ namespace BankForm
                         break;
 
                     case "3":
-                        if (bankSystem.hasCustomer == false)
+                        if (!bankSystem.hasCustomer)
                         {
                             Console.WriteLine("\nCreate account first");
                             break;
@@ -65,7 +65,7 @@ namespace BankForm
                         break;
 
                     case "4":
-                        if (bankSystem.hasCustomer == false)
+                        if (!bankSystem.hasCustomer)
                         {
                             Console.WriteLine("\nCreate account first");
                             break;
@@ -74,7 +74,7 @@ namespace BankForm
                         break;
 
                     case "5":
-                        if (bankSystem.hasCustomer == false)
+                        if (!bankSystem.hasCustomer)
                         {
                             Console.WriteLine("\nCreate account first");
                             break;

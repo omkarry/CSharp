@@ -101,7 +101,7 @@ namespace ConsoleApp2.BankModels
                 {
                     isMarried = true;
                     Console.WriteLine("\nDo you have children?(Yes/No) ");
-                    haveChildren = Console.ReadLine();
+                    haveChildren = Console.ReadLine().ToUpper();
                     if (haveChildren == "Y" || haveChildren == "YES")
                     {
                         Console.WriteLine("\nHow many ? ");
@@ -121,6 +121,10 @@ namespace ConsoleApp2.BankModels
                                     break;
                             } while (true);
                         }
+                    }
+                    else
+                    {
+                        break;
                     }
                 }
                 else
