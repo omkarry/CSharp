@@ -44,7 +44,12 @@ namespace FileHandling
                     Console.WriteLine("\nEnter the file with location which you want to copy:");
                     string? copyPath = Console.ReadLine();
                     if (File.Exists(copyPath))
-                        File.Copy(copyPath, filePath, true);
+                    {
+                        if (File.ReadAllText(copyPath).Length == 0)
+                            Console.WriteLine("File is empty to copy");
+                        else
+                            File.Copy(copyPath, filePath, true);
+                    }
                     else
                         throw new FileNotFoundException("\nFile not found to copy");
                 }
@@ -81,15 +86,28 @@ namespace FileHandling
                 else
                 {
                     string text = File.ReadAllText(path);
-                    Console.WriteLine("\nText in the file {0}: \n{1}", Path.GetFileName(path), text);
+                    if (text.Length == 0)
+                        Console.WriteLine("File is empty");
+                    else
+                    {
+                        Console.WriteLine("\nText in the file {0}: \n{1}", Path.GetFileName(path), text);
 
-                    Console.WriteLine("\nWhich word you want to replace?");
-                    string? wordToReplace = Console.ReadLine() ?? throw new ArgumentNullException();
+                        Console.WriteLine("\nWhich word you want to replace?");
+                        string? wordToBeReplace = Console.ReadLine() ?? throw new ArgumentNullException();
 
-                    Console.WriteLine("{0} replace this word with: ", wordToReplace);
-                    string? replaceWordWith = Console.ReadLine();
-                    text = text.Replace(wordToReplace, replaceWordWith);
-                    File.WriteAllText(path, text);
+                        char[] separator = { ' ', ',', '\n', '!', '?', '-' };
+                        string[] words = text.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+
+                        if (words.Contains(wordToBeReplace))
+                        {
+                            Console.WriteLine("\n{0} replace this word with: ", wordToBeReplace);
+                            string? replaceWordWith = Console.ReadLine();
+                            text = text.Replace(wordToBeReplace, replaceWordWith);
+                            File.WriteAllText(path, text);
+                        }
+                        else
+                            Console.WriteLine("\nWord not found to replace");
+                    }
                 }
             }
             catch (FileNotFoundException)
