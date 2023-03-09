@@ -1,4 +1,4 @@
-﻿namespace WebAPI_CRUD_operations.Models
+﻿namespace WebAPI_CRUD.Models
 {
     public class Location
     {
