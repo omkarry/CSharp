@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebAPI_CRUD_operations.Models;
+using System.Runtime.InteropServices.ObjectiveC;
+using WebAPI_CRUD.Models;
 
 namespace WebAPI_CRUD_operations.Controllers
 {
@@ -23,22 +24,22 @@ namespace WebAPI_CRUD_operations.Controllers
         ///     
         /// </remarks>
         /// <response code="200">Returns List of customers</response>
-        /// <response code="400">Customer not found</response>
+        /// <response code="400">Customers not available</response>
         /// <response code="500">Internal server Error</response>
         [HttpGet("Customers")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<List<Customer>> Get()
         {
             try
             {
                 if (_customers == null)
-                    return BadRequest("Customers not available");
+                    return BadRequest(new ApiResponse<object> { StatusCode = 400, Message = "No customers available"});
                 else
                 {
                     List<Customer> customers = _customers;
-                    return Ok(customers);
+                    return Ok(new ApiResponse<List<Customer>> { StatusCode = 200, Message = "List of customers", Value = customers });
                 }
             }
             catch (Exception ex)
@@ -62,7 +63,7 @@ namespace WebAPI_CRUD_operations.Controllers
         /// <response code="500">Internal server Error</response>
         [HttpGet("Customer/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult Get(int id)
         {
@@ -71,9 +72,9 @@ namespace WebAPI_CRUD_operations.Controllers
                 foreach (Customer customer in _customers.ToList())
                 {
                     if (customer.Id == id)
-                        return Ok(customer);
+                        return Ok(new ApiResponse<Customer> { StatusCode = 200, Message = "Customer details", Value = customer});
                 }
-                return BadRequest("Customer not found");
+                return BadRequest(new ApiResponse<object> { StatusCode = 400, Message = "Customer not found"});
             }
             catch (Exception ex)
             {
@@ -102,11 +103,10 @@ namespace WebAPI_CRUD_operations.Controllers
         ///     }
         ///
         /// </remarks>
-        /// <response code="201">Returns the newly created customer</response>
+        /// <response code="200">Returns the newly created customer</response>
         /// <response code="500">Internal server Error</response>
         [HttpPost("Customer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<Customer> Post(Customer customer)
         {
@@ -128,18 +128,20 @@ namespace WebAPI_CRUD_operations.Controllers
                         }
                         else
                         {
-                            foreach (Location location in _locations.ToList())
+                            //foreach (Location location in _locations.ToList())
+                            //{
+                            //    if (location.Address.ToLower() == customerLocation.Address.ToLower())
+                            //    {
+                            //        isLocationPresent = true;
+                            //        locationId = location.Id;
+                            //        break;
+                            //    }
+                            //}
+
+                            int index = _locations.ToList().FindIndex(c =>  c.Address == customerLocation.Address);
+                            if (index != -1)
                             {
-                                if (location.Address.ToLower() == customerLocation.Address.ToLower())
-                                {
-                                    isLocationPresent = true;
-                                    locationId = location.Id;
-                                    break;
-                                }
-                            }
-                            if (isLocationPresent)
-                            {
-                                customerLocation.Id = locationId;
+                                customerLocation.Id = _locations[index].Id;
                             }
                             else
                             {
@@ -150,7 +152,7 @@ namespace WebAPI_CRUD_operations.Controllers
                     }
                     _customers.Add(customer);
                 }
-                return CreatedAtAction(nameof(Get), new { id = customer.Id }, customer);
+                return Ok(new ApiResponse<Customer> { StatusCode = 200, Message = "Customer added successfully", Value = customer });
             }
             catch (Exception ex)
             {
@@ -184,7 +186,7 @@ namespace WebAPI_CRUD_operations.Controllers
         /// <response code="500">Internal server Error</response>
         [HttpPut("Customer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<Customer> Put(Customer customer)
         {
@@ -204,18 +206,23 @@ namespace WebAPI_CRUD_operations.Controllers
                         }
                         else
                         {
-                            foreach (Location location in _locations.ToList())
+                            //foreach (Location location in _locations.ToList())
+                            //{
+                            //    if (location.Address.ToLower() == customerLocation.Address.ToLower())
+                            //    {
+                            //        isLocationPresent = true;
+                            //        locationId = location.Id;
+                            //        break;
+                            //    }
+                            //}
+                            //if (isLocationPresent)
+                            //{
+                            //    customerLocation.Id = locationId;
+                            //}
+                            int indexOfLocation = _locations.ToList().FindIndex(c => c.Address == customerLocation.Address);
+                            if (indexOfLocation != -1)
                             {
-                                if (location.Address.ToLower() == customerLocation.Address.ToLower())
-                                {
-                                    isLocationPresent = true;
-                                    locationId = location.Id;
-                                    break;
-                                }
-                            }
-                            if (isLocationPresent)
-                            {
-                                customerLocation.Id = locationId;
+                                customerLocation.Id = _locations[indexOfLocation].Id;
                             }
                             else
                             {
@@ -225,9 +232,10 @@ namespace WebAPI_CRUD_operations.Controllers
                         }
                     }
                     _customers[index] = customer;
-                    return Ok(customer);
+                    return Ok(new ApiResponse<Customer> { StatusCode = 200, Message = "Customer updated successfully", Value = customer });
                 }
-                return BadRequest("Customer not found");
+                else
+                    return BadRequest(new ApiResponse<object> { StatusCode = 400, Message = "Customer not found" });
             }
             catch (Exception ex)
             {
@@ -249,7 +257,7 @@ namespace WebAPI_CRUD_operations.Controllers
         /// <response code="500">Internal server Error</response>
         [HttpDelete("Customer/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult Delete(int id)
         {
@@ -263,10 +271,10 @@ namespace WebAPI_CRUD_operations.Controllers
                         if (customer.Locations.Count == 0)
                         {
                             _customers.Remove(customer);
-                            return Ok("Customer deleted successfully");
+                            return Ok(new ApiResponse<object> { StatusCode = 200, Message = "Customer deleted successfully" });
                         }
                         else
-                            return BadRequest("Customer has locations");
+                            return BadRequest(new ApiResponse<object> { StatusCode = 400, Message = "Customer not found" });
                     }
                 }
                 return BadRequest("Customer not found");
@@ -292,18 +300,18 @@ namespace WebAPI_CRUD_operations.Controllers
         /// <response code="500">Internal server Error</response>
         [HttpGet("Locations")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<List<Location>> GetLocation()
         {
             try
             {
                 if (_locations == null)
-                    return BadRequest("Locations not available");
+                    return BadRequest(new ApiResponse<object> { StatusCode = 404, Message = "Locations not available" });
                 else
                 {
                     List<Location> locations = _locations;
-                    return Ok(locations);
+                    return Ok(new ApiResponse<List<Location>> { StatusCode = 200, Message = "List of locations", Value = locations });
                 }
             }
             catch (Exception ex)
@@ -327,7 +335,7 @@ namespace WebAPI_CRUD_operations.Controllers
         /// <response code="500">Internal server Error</response>
         [HttpGet("Location/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult GetLocation(int id)
         {
@@ -336,9 +344,9 @@ namespace WebAPI_CRUD_operations.Controllers
                 foreach (Location location in _locations.ToList())
                 {
                     if (location.Id == id)
-                        return Ok(location);
+                        return Ok(new ApiResponse<Location> { StatusCode = 200, Message = "Location details", Value = location });
                 }
-                return BadRequest("Location not found");
+                return BadRequest(new ApiResponse<object> { StatusCode = 400, Message = "Location not found" });
             }
             catch (Exception ex)
             {
@@ -361,10 +369,10 @@ namespace WebAPI_CRUD_operations.Controllers
         ///     }
         ///
         /// </remarks>
-        /// <response code="201">Returns the newly created location</response>
+        /// <response code="200">Returns the newly created location</response>
         /// <response code="500">Internal server Error</response>
         [HttpPost("Location")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<Location> Post(Location location)
         {
@@ -381,7 +389,7 @@ namespace WebAPI_CRUD_operations.Controllers
                     foreach (Location loc in _locations)
                     {
                         if (loc.Address.ToLower() == location.Address.ToLower())
-                            return BadRequest("Location already present");
+                            return BadRequest(new ApiResponse<object> { StatusCode = 400, Message = "Location already present" });
                     }
                     if (!isLocationPresent)
                     {
@@ -390,7 +398,7 @@ namespace WebAPI_CRUD_operations.Controllers
                     }
                 }
 
-                return CreatedAtAction(nameof(GetLocation), new { id = location.Id }, location);
+                return Ok(new ApiResponse<Location> { StatusCode = 200, Message = "Location added successfully", Value = location });
             }
             catch (Exception ex)
             {
@@ -417,7 +425,7 @@ namespace WebAPI_CRUD_operations.Controllers
         /// <response code="500">Internal server Error</response>
         [HttpPut("Location")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<Location> Put(Location location)
         {
@@ -433,8 +441,9 @@ namespace WebAPI_CRUD_operations.Controllers
                 if (indexOfLocation != -1)
                 {
                     _locations[indexOfLocation] = location;
+                    return Ok(new ApiResponse<Location> { StatusCode = 200, Message = "Location updated successfully", Value = location });
                 }
-                return Ok(location);
+                return BadRequest(new ApiResponse<object> { StatusCode = 404, Message = "Location not found" });
             }
             catch (Exception ex)
             {
@@ -462,12 +471,17 @@ namespace WebAPI_CRUD_operations.Controllers
             {
                 foreach (Customer customer in _customers.ToList())
                 {
-                    foreach (Location location in customer.Locations.ToList())
+                    //foreach (Location location in customer.Locations.ToList())
+                    //{
+                    //    if (location.Id == id)
+                    //    {
+                    //        customer.Locations.Remove(location);
+                    //    }
+                    //}
+                    int index = customer.Locations.ToList().FindIndex(c => c.Id == id);
+                    if (index != -1)
                     {
-                        if (location.Id == id)
-                        {
-                            customer.Locations.Remove(location);
-                        }
+                        customer.Locations.RemoveAt(index);
                     }
                 }
                 foreach (Location location in _locations.ToList())
@@ -475,9 +489,10 @@ namespace WebAPI_CRUD_operations.Controllers
                     if (location.Id == id)
                     {
                         _locations.Remove(location);
+                        return Ok(new ApiResponse<Location> { StatusCode = 200, Message = "Location deleted successfully" });
                     }
                 }
-                return Ok("Location deleted successfully");
+                return BadRequest(new ApiResponse<object> { StatusCode = 404, Message = "Location not found" });
             }
             catch (Exception ex)
             {
@@ -499,7 +514,7 @@ namespace WebAPI_CRUD_operations.Controllers
         /// <response code="500">Internal server Error</response>
         [HttpDelete("Customer/{customerId}/Location/{locationId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult DeleteCustomerLocation(int customerId, int locationId)
         {
@@ -509,17 +524,23 @@ namespace WebAPI_CRUD_operations.Controllers
                 {
                     if (customerId == customer.Id)
                     {
-                        foreach (Location location in customer.Locations.ToList())
+                        //foreach (Location location in customer.Locations.ToList())
+                        //{
+                        //    if (location.Id == locationId)
+                        //    {
+                        //        customer.Locations.Remove(location);
+                        //        return Ok("Customer location deleted successfully");
+                        //    }
+                        //}
+                        int index = customer.Locations.ToList().FindIndex(c => c.Id == locationId);
+                        if (index != -1)
                         {
-                            if (location.Id == locationId)
-                            {
-                                customer.Locations.Remove(location);
-                                return Ok("Customer location deleted successfully");
-                            }
+                            customer.Locations.RemoveAt(index);
+                            return Ok(new ApiResponse<Customer> { StatusCode = 200, Message = "Customer location deletedqQ1" });
                         }
                     }
                 }
-                return BadRequest("Customer location not found");
+                return BadRequest(new ApiResponse<object> { StatusCode = 404, Message = "Location not found" });
             }
             catch (Exception ex)
             {
