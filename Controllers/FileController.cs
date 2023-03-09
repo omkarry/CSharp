@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using WebAPI_upload_file.Models;
 
 namespace WebAPI_upload_file.Controllers
 {
@@ -33,9 +34,9 @@ namespace WebAPI_upload_file.Controllers
             {
                 string newDirectoryPath = Path.Combine(_directoryPath, directoryName);
                 if (Directory.Exists(newDirectoryPath))
-                    return Conflict("Directory already exist");
+                    return Conflict(new ApiResponse { StatusCode = 409, Message = "Directory already exist" });
                 Directory.CreateDirectory(newDirectoryPath);
-                return Ok("Directory created successfully");
+                return Ok(new ApiResponse { StatusCode = 200, Message = "Directory created successfully" });
             }
             catch (Exception ex)
             {
@@ -47,14 +48,16 @@ namespace WebAPI_upload_file.Controllers
         /// Uploads file
         /// </summary>
         /// <response code="200">File uploaded</response>
-        /// <response code="400">File not in correct format or size or not found</response>
+        /// <response code="400">File not in correct format or size</response>
+        /// <response code="404">File not found</response>
         /// <response code="409">File already exist</response>
         /// <response code="500">An error occurred while uploading file</response>
-        
+
         [HttpPost("UploadFile/{directoryName}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)] 
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)] 
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UploadFile([FromForm] string fileToCopy, string directoryName)
         {
@@ -62,38 +65,33 @@ namespace WebAPI_upload_file.Controllers
             {
                 if (System.IO.File.Exists(fileToCopy))
                 {
-                    if (fileToCopy != "")
+                    string[] allowedFileTypes = { ".txt", ".jpg", ".png", ".xlsx" };
+                    string fileName = Path.GetFileName(fileToCopy);
+                    string fileExtension = Path.GetExtension(fileToCopy);
+
+                    if (!allowedFileTypes.Contains(fileExtension))
+                        return BadRequest(new ApiResponse { StatusCode = 400, Message = "File type not Allowed. Only txt/png/xls/jpg files are allowed." });
+
+                    long minFileSize = 10485760;
+                    long fileLength = new System.IO.FileInfo(fileToCopy).Length;
+                    if (fileLength < minFileSize)
+                        return BadRequest(new ApiResponse { StatusCode = 400, Message = "File size should be greater than 10MB" });
+
+                    string newFilePath = Path.Combine(_directoryPath, directoryName, fileName);
+
+                    if (System.IO.File.Exists(newFilePath))
+                        return Conflict(new ApiResponse { StatusCode = 409, Message = "File Already exist" });
+
+                    using (FileStream fileStreamToCopy = new FileStream(newFilePath, FileMode.Create, FileAccess.Write))
                     {
-                        string[] allowedFileTypes = { ".txt", ".jpg", ".png", ".xlsx" };
-                        string fileName = Path.GetFileName(fileToCopy);
-                        string fileExtension = Path.GetExtension(fileToCopy);
-
-                        if (!allowedFileTypes.Contains(fileExtension))
-                            return BadRequest("File type not Allowed. Only txt/png/xls/jpg files are allowed.");
-
-                        long minFileSize = 10485760;
-                        long fileLength = new System.IO.FileInfo(fileToCopy).Length;
-                        if (fileLength < minFileSize)
-                            return BadRequest("File size should be greater than 10MB");
-
-                        string newFilePath = Path.Combine(_directoryPath, directoryName, fileName);
-
-                        if (System.IO.File.Exists(newFilePath))
-                            return Conflict("File Already exist");
-
-                        using (FileStream fileStreamToCopy = new FileStream(newFilePath, FileMode.Create, FileAccess.Write))
+                        using (FileStream fileStreamToRead = new FileStream(fileToCopy, FileMode.Open, FileAccess.Read))
                         {
-                            using (FileStream fileStreamToRead = new FileStream(fileToCopy, FileMode.Open, FileAccess.Read))
-                            {
-                                fileStreamToRead.CopyTo(fileStreamToCopy);
-                                return Ok("File Uplaoaded successfully");
-                            }
+                            fileStreamToRead.CopyTo(fileStreamToCopy);
+                            return Ok(new ApiResponse { StatusCode = 200, Message = "File Uplaoaded successfully" });
                         }
                     }
-                    return BadRequest("No file was uploaded");
                 }
-
-                return Conflict("File not found to copy");
+                return NotFound(new ApiResponse { StatusCode = 404, Message = "File not found to copy" });
             }
             catch (Exception ex)
             {
@@ -105,11 +103,11 @@ namespace WebAPI_upload_file.Controllers
         /// Deletes file
         /// </summary>
         /// <response code="200">File Deleted</response>
-        /// <response code="400">File not found</response>
+        /// <response code="404">File not found</response>
         /// <response code="500">An error occurred while deleting file</response>
         [HttpDelete("Delete")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult DeleteFile([FromForm] string directoryName, [FromForm] string fileName)
         {
@@ -117,9 +115,9 @@ namespace WebAPI_upload_file.Controllers
             {
                 string filePath = Path.Combine(_directoryPath, directoryName, fileName);
                 if (!System.IO.File.Exists(filePath))
-                    return BadRequest("File not found");
+                    return NotFound(new ApiResponse { StatusCode = 404, Message = "File not found" });
                 System.IO.File.Delete(filePath);
-                return Ok("File deleted successfully");
+                return Ok(new ApiResponse { StatusCode = 200, Message = "File deleted successfully" });
             }
             catch (Exception ex)
             {
