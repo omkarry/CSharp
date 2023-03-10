@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "UploadFiles": {
+      "commandName": "Project",
+      "commandLineArgs": "Uploads\r\nC:\\Users\\Lenovo\\Downloads\\sample.jpg\r\nC:\\Users\\Lenovo\\Downloads\\gitignore.txt\r\nC:\\Users\\Lenovo\\Downloads\\10mb.txt"
+    }
+  }
+}
